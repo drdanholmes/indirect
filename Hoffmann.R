@@ -60,31 +60,3 @@ Hoff.QQ.plot(faithful$waiting)
 # linear sections are seen from ~ 48 to 53 min and ~ 77 to 89
 Hoff.QQ.plot(faithful$waiting, from = 48, to = 54)
 Hoff.QQ.plot(faithful$waiting, from = 77, to = 89)
-```
-
-## Code for **Incorrect** Linear CDF Variant of Hoffmann Method 
-
-```{r appendix3.badcdf, echo=TRUE, eval=FALSE}
-# **Incorrect** Linear CDF Variant of Hoffman Method ---------------------------
-# **NOTE**: Do not use this method for real applications!
-bad.CDF.plot <- function(x, alpha=0.05, from=NA, to=NA, xlim=range(x)) {
-  cdf.fun <- ecdf(x)
-  x <-  seq(min(x), max(x), length=1000)
-  cdf.data <- data.frame(x=x, y=cdf.fun(x))
-  plot(y ~ x,
-       data = cdf.data,
-       type = "l",
-       xlab = "Patient Result",
-       ylab = "Quantiles of the Normal Distibution",
-       xlim = xlim)
-  if (!is.na(from) && !is.na(to)) {
-    lin.mod <- lm(y ~ x, data=cdf.data, subset=x >= from & x <= to)
-    abline(lin.mod)
-    cc <- coef(lin.mod)
-    result <- (c(alpha/2, 1-alpha/2) - cc[1])/cc[2]
-    names(result) <- c("lower", "upper")
-    abline(h = c(alpha/2, 1 - alpha/2), col = "blue")
-    abline(v = result, col = "blue", lty = 2)
-    return(result)
-  }
-}
