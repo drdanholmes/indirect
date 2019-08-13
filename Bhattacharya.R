@@ -1,5 +1,5 @@
 # R code for generating Bhattacharya plots
-# Code author: Dr. Daniel T. Holmes, MD
+# Code authors: Dr. Daniel T. Holmes, MD and Dr. Kevin A Buhr, PhD
 # ----------------------------------------
 # Usage
 # ----------------------------------------
@@ -8,20 +8,27 @@
 # ----------------------------------------
 # Arguments
 # ----------------------------------------
-# x         a vector of observations drawn from the mixure for which decomposition is desired.
-# breaks    generally a vector of breakpoints to define bins for Bhattacharya plot. 
-#           Enter ?hist for other options. Defaults to same algorithm as hist function.
-#           Breaks must not be so numerous that empty bins are created. Breaks must be evenly spaced.
-# from      optional vector to define the starting bin number(s) for the regression of the 
-#           linear section(s) of interest in the Bhattacharya plot. Must be of equal length to
-#           to vector 'to'.
-# to        optional vector to define the ending bin number(s) for the regression of the 
-#           linear section(s) of interest in the Bhattacharya plot. Must be of equal length to
-#           vector 'from'.
+
+# x         a vector of observations drawn from the mixure for which
+#           decomposition is desired.
+# breaks    generally a vector of breakpoints to define bins for
+#           Bhattacharya plot.  Enter ?hist for other
+#           options. Defaults to same algorithm as hist function.
+#           Breaks must not be so numerous that empty bins are
+#           created. Breaks must be evenly spaced.
+# from      optional vector to define the starting bin number(s) for the
+#           regression of the linear section(s) of interest in the
+#           Bhattacharya plot. Must be of equal length to to vector
+#           'to'.
+# to        optional vector to define the ending bin number(s) for the
+#           regression of the linear section(s) of interest in the
+#           Bhattacharya plot. Must be of equal length to vector
+#           'from'.
 # alpha     alpha value reference interval estimate. 
 # xlim      vector of length = 2 defining a plot range.
-# plot.num  logical; if TRUE bin numbers are plotted beside points. Facilitates selection of
-#           variables from and to.
+# plot.num  logical; if TRUE bin numbers are plotted beside
+#           points. Facilitates selection of variables from and to.
+
 # ----------------------------------------
 # Value
 # ----------------------------------------
@@ -53,7 +60,8 @@ textxy <- function (X, Y, labs, m = c(0, 0), cex = 0.5, offset = 0.8, ...)
          adj = c(0.5 + offset, 0.5 + offset), cex = cex, ...)
 }
 
-bhatt.plot <- function(x, breaks = "Sturges", from = NA, to = NA, alpha = 0.05, xlim = range(x), plot.num = TRUE){
+bhatt.plot <- function(x, breaks = "Sturges", from = NA, to = NA,
+                       alpha = 0.05, xlim = range(x), plot.num = TRUE) {
   if (is.numeric(breaks) && length(breaks) > 1) {
     # if explicit breaks, limit x to range covered by breaks
     x <- x[x >= min(breaks) & x <= max(breaks)]
@@ -105,7 +113,9 @@ bhatt.plot <- function(x, breaks = "Sturges", from = NA, to = NA, alpha = 0.05, 
       N[i] <- sum(df$counts[from[i]:to[i]])/sum(P)
     }
     p <- N/sum(N)
-    result <- data.frame(mu,sigma,p, mu + qnorm(alpha/2)*sigma, mu + qnorm(1 - alpha/2)*sigma)
+    result <- data.frame(mu,sigma, p,
+                         mu + qnorm(alpha/2)*sigma,
+                         mu + qnorm(1 - alpha/2)*sigma)
     names(result) <- c("mu","sigma","p","lower", "upper")
     return(result)
   }
@@ -113,12 +123,15 @@ bhatt.plot <- function(x, breaks = "Sturges", from = NA, to = NA, alpha = 0.05, 
 
 # Example 1
 # ----------------------------------------
-# Data is taken from Bhattachary's original paper (Bhattacharya CG. A simple method of 
-# resolution of a distribution into Gaussian components. Biometrics. 1967;1:115-35.)
-# which in turn came from an earlier paper looking at the fork length of Porgy fish caught 
-# in the East China sea: (Tanaka, S. A method of analysing of polymodal frequency 
-# distribution and its application to the length distribution of the Porgy, Taius 
-# tumifrons (J. and S.). J. Fish. Res. Bd. Can. 1962;19:1143-59.)
+# Data is taken from Bhattachary's original paper (Bhattacharya CG. A
+# simple method of resolution of a distribution into Gaussian
+# components. Biometrics. 1967;1:115-35.)  which in turn came from an
+# earlier paper looking at the fork length of Porgy fish caught in the
+# East China sea: (Tanaka, S. A method of analysing of polymodal
+# frequency distribution and its application to the length
+# distribution of the Porgy, Taius tumifrons (J. and
+# S.). J. Fish. Res. Bd. Can. 1962;19:1143-59.)
+
 
 mids <- seq(from = 9.5, to = 29.5, by = 1)
 counts <- c(509,2240,2341,623,476,1230,1439,921,448,512,
@@ -128,8 +141,9 @@ ex1.df <- data.frame(mids, counts)
 ex1.data <- unlist(mapply(rep, ex1.df$mids, ex1.df$counts))
 # Plot Bhattachary plot with no linear sections defined
 bhatt.plot(ex1.data, breaks = 9:30)
-# Once the Bhattachary plot is displayed the 'from' and 'to' vectors represent the four 
-# obviously linear sections: points 1-3, points 5-7, points 10-12 and points 18-20
+# Once the Bhattachary plot is displayed the 'from' and 'to' vectors
+# represent the four obviously linear sections: points 1-3, points
+# 5-7, points 10-12 and points 18-20
 from <- c(1,5,10,18)
 to <- c(3,7,12,20)
 bhatt.plot(ex1.data, breaks = 9:30, from = from, to = to)
@@ -159,8 +173,8 @@ bhatt.plot(ex2.data, breaks = 8:26, from = c(1,6,11), to = c(4,8,17))
 
 # Example 3
 # ----------------------------------------
-# Built-in R data set for waiting times between eruptions of the Old Faithful geyser in 
-# Yellowstone National Park.
+# Built-in R data set for waiting times between eruptions of the Old
+# Faithful geyser in Yellowstone National Park.
 
 data("faithful")
 hist(faithful$waiting)
@@ -184,5 +198,3 @@ curve(fit$p[2]*dnorm(x, mean = fit$mu[2], sd = fit$sigma[2]),
       lwd = 2,
       col = "green",
       add = TRUE)
-
-
